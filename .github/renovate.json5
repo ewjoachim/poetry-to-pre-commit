@@ -1,0 +1,16 @@
+{
+    extends: ["config:recommended", ":enablePreCommit"],
+    labels: ["PR type: dependencies 🤖"],
+    lockFileMaintenance: {
+        enabled: true,
+        automerge: true,
+    },
+    packageRules: [
+        {
+            groupName: "all dependencies",
+            groupSlug: "all",
+            matchPackagePatterns: ["*"],
+        },
+    ],
+    automerge: true,
+}

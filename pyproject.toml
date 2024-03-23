@@ -1,0 +1,82 @@
+[build-system]
+requires = ["poetry-core", "poetry-dynamic-versioning"]
+build-backend = "poetry_dynamic_versioning.backend"
+
+[tool.poetry]
+name = "poetry_to_pre_commit"
+version = "0.0.0"
+description = "Sync versions in .pre-commit-config.yaml from poetry.lock"
+authors = ["Joachim Jablon"]
+license = "MIT License"
+classifiers = [
+    "Development Status :: 5 - Stable",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+]
+readme = "README.md"
+keywords = ["pre-commit", "poetry"]
+repository = "https://github.com/ewjoachim/poetry_to_pre_commit/"
+
+[tool.poetry.scripts]
+sync-repos = 'poetry_to_pre_commit.__init__:sync_repos_cli'
+sync-hooks-additional-dependencies = 'poetry_to_pre_commit.__init__:sync_hooks_additional_dependencies_cli'
+
+[tool.poetry.dependencies]
+python = "^3.8"
+poetry = "*"
+"ruamel.yaml" = "*"
+
+[tool.poetry.group.types]
+optional = true
+
+
+[tool.poetry.group.types.dependencies]
+
+[tool.poetry.group.lint_format.dependencies]
+ruff = "*"
+
+[tool.poetry.group.test.dependencies]
+pytest = "*"
+pytest-cov = "*"
+pytest-mock = "*"
+
+[tool.poetry-dynamic-versioning]
+enable = true
+pattern = '(?P<base>\d+(\.\d+)*)([-._]?((?P<stage>[a-zA-Z]+)[-._]?(?P<revision>\d+)?))?$'
+
+[tool.pytest.ini_options]
+addopts = [
+    "--cov-report=term-missing",
+    "--cov-report=html",
+    "--cov-branch",
+    "--cov=poetry_to_pre_commit",
+    "-vv",
+    "--strict-markers",
+    "-rfE",
+]
+testpaths = ["tests"]
+filterwarnings = """
+    error
+"""
+
+[tool.coverage.run]
+relative_files = true
+
+[tool.pyright]
+exclude = ["tests"]
+
+[tool.ruff.lint]
+extend-select = [
+    "UP",  # pyupgrade
+    "I",   # isort
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "RUF", # ruff
+]
+fixable = ["ALL"]
+extend-ignore = [
+    "E501", # line too long
+]
+
+[tool.ruff.lint.isort]
+required-imports = ["from __future__ import annotations"]
