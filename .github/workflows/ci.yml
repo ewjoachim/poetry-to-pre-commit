@@ -89,8 +89,9 @@ jobs:
       - static-typing
     steps:
       - name: Report success
-        if: ${{ needs.*.result != fromJson('["success", "success"]') }}
-        run: exit 1
+        run: "[ $(uniq) -eq 'success' ]"
+        env:
+          STATUSES: ${{ join('\n', needs.*.result) }}
 
   coverage:
     name: Coverage
