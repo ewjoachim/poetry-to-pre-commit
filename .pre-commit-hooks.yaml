@@ -4,8 +4,8 @@
   entry: sync-repos
   language: python
   files: (poetry.lock|.pre-commit-config.ya?ml)
-- id: sync-repos
-  name: sync-hooks-additional-dependencies
+- id: sync-hooks-additional-dependencies
+  name: Sync hooks additional dependencies with Poetry
   description: Automatically sync pre-commit hook additional dependencies with poetry groups
   entry: sync-hooks-additional-dependencies
   language: python
