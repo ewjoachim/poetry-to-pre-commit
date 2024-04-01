@@ -80,19 +80,6 @@ jobs:
         with:
           version: ${{ steps.pre-commit-pyright-version.outputs.pyright-version }}
 
-  report-status:
-    name: success
-    runs-on: ubuntu-latest
-    if: always()
-    needs:
-      - build
-      - static-typing
-    steps:
-      - name: Report success
-        run: "[ $(uniq) -eq 'success' ]"
-        env:
-          STATUSES: ${{ join('\n', needs.*.result) }}
-
   coverage:
     name: Coverage
     runs-on: ubuntu-latest
