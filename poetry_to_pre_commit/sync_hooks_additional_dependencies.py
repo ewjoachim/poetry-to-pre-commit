@@ -15,10 +15,10 @@ PRE_COMMIT_CONFIG_FILE = pathlib.Path(".pre-commit-config.yaml")
 
 def format_bind(value: str) -> tuple[str, set[str]]:
     try:
-        key, value = value.split(":", 1)
+        key, value = value.split("=", 1)
     except ValueError:
         raise ValueError(
-            f"Invalid bind value: {value}. Expected format: pre_commit_hook_id:poetry_group[,poetry_group,...]."
+            f"Invalid bind value: {value}. Expected format: pre_commit_hook_id=poetry_group[,poetry_group,...]."
         )
     return key, set(value.split(","))
 
@@ -38,13 +38,13 @@ def get_sync_hooks_additional_dependencies_parser() -> argparse.ArgumentParser:
         type=format_bind,
         action="append",
         default=[],
-        help="Bind pre-commit hook ids to poetry group names (e.g. mypy:types). "
+        help="Bind pre-commit hook ids to poetry group names (e.g. mypy=types). "
         "To add the main package dependencies, use the poetry group name "
         f"`{MAIN_GROUP}`. You can bind multiple poetry groups to a single hook "
         "id by either using multiple flags, or by providing a comma-separated "
         "list of poetry group names (e.g. "
-        f"`--bind mypy:{MAIN_GROUP} --bind mypy:types` or "
-        f"`--bind mypy:{MAIN_GROUP},types`).",
+        f"`--bind mypy={MAIN_GROUP} --bind mypy:types` or "
+        f"`--bind mypy={MAIN_GROUP},types`).",
     )
     return parser
 

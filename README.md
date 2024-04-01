@@ -35,8 +35,10 @@ repos:
             "--skip=another_project",
             # You can specify that a given hook id (like "pyright-python")
             # should be mapped to a given PyPI package name (like "pyright")
-            "--map=pyright-python:pyright",
-            "--map=ruff-pre-commit:ruff",
+            "--map",
+            "pyright-python=pyright",
+            "--map",
+            "ruff-pre-commit=ruff",
           ]
 
       # Use this hook to sync a specific hook with a Poetry group, adding all
@@ -45,7 +47,7 @@ repos:
         # "mypy" is the id of a pre-commit hook
         # "types" is the name of your poetry group containing typing dependencies
         # "main" is the automated name associated with the "default" poetry dependencies
-        args: ["--bind", "mypy:types,main"]
+        args: ["--bind", "mypy=types,main"]
 ```
 
 ## How it works
@@ -67,7 +69,7 @@ leading `v`).
 
 ### `sync-hooks-additional-dependencies_cli`
 
-This hook will iterate over all the `--bind {pre-commit-hook}:{poetry_groups}`
+This hook will iterate over all the `--bind {pre-commit-hook}={poetry_groups}`
 arguments you provided, and for each of them, it will look for the
 corresponding groups in your `pyproject.toml`. If it finds it, then it will
 look for the version of all the dependencies of these groups in your

@@ -9,8 +9,8 @@ from poetry_to_pre_commit import sync_hooks_additional_dependencies
 @pytest.mark.parametrize(
     "value,expected",
     [
-        ("foo:bar", ("foo", {"bar"})),
-        ("foo:bar,baz", ("foo", {"bar", "baz"})),
+        ("foo=bar", ("foo", {"bar"})),
+        ("foo=bar,baz", ("foo", {"bar", "baz"})),
     ],
 )
 def test_format_bind(value, expected):
@@ -32,7 +32,7 @@ def test_combine_bind_values():
 
 def test_get_sync_hooks_additional_dependencies_parser():
     parser = sync_hooks_additional_dependencies.get_sync_hooks_additional_dependencies_parser()
-    assert parser.parse_args(["--bind", "foo:bar,baz", "--bind", "foo:qux"]).bind == [
+    assert parser.parse_args(["--bind", "foo=bar,baz", "--bind", "foo=qux"]).bind == [
         ("foo", {"bar", "baz"}),
         ("foo", {"qux"}),
     ]
@@ -110,7 +110,7 @@ def test_sync_hooks_additional_dependencies(tmp_path, poetry_cwd):
     )
 
     sync_hooks_additional_dependencies.sync_hooks_additional_dependencies(
-        argv=["foo", "--bind", "pyright:types,main"],
+        argv=["foo", "--bind", "pyright=types,main"],
         pre_commit_path=pre_commit_path,
         poetry_cwd=poetry_cwd,
     )

@@ -30,9 +30,9 @@ def get_sync_repos_parser() -> argparse.ArgumentParser:
         "--map",
         action="append",
         default=[],
-        type=lambda x: tuple(x.split(":")),
+        type=lambda x: tuple(x.split("=")),
         help="Map repo name to PyPI name in case of mismatch "
-        "(e.g. 'pyright-python:pyright'). Note: if the repo name "
+        "(e.g. 'pyright-python=pyright'). Note: if the repo name "
         "is a mirror, the prefix 'mirrors-' is assumed, you don't need to explicit it. "
         "Flag can be repeated multiple times.",
     )
