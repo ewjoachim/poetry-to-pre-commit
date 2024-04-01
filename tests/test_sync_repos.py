@@ -32,7 +32,7 @@ def test_repo_url_to_pypi_name(input, expected):
             {"filenames": [], "map": [], "skip": ["foo", "bar"]},
         ),
         (
-            ["--map", "foo:bar", "--map", "baz:qux"],
+            ["--map", "foo=bar", "--map", "baz=qux"],
             {"filenames": [], "map": [("foo", "bar"), ("baz", "qux")], "skip": []},
         ),
     ],
@@ -127,7 +127,7 @@ def test_sync_repos(tmp_path, poetry_cwd):
     )
 
     sync_repos.sync_repos(
-        argv=["foo", "--map", "pyright-python:pyright"],
+        argv=["foo", "--map", "pyright-python=pyright"],
         pre_commit_path=pre_commit_path,
         poetry_cwd=poetry_cwd,
     )
