@@ -35,7 +35,7 @@ repos:
             "--skip=another_project",
             # You can specify that a given hook id (like "pyright-python")
             # should be mapped to a given PyPI package name (like "pyright")
-            "--map=pyright-python:main,pyright",
+            "--map=pyright-python:pyright",
             "--map=ruff-pre-commit:ruff",
           ]
 
