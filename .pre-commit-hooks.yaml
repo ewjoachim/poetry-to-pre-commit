@@ -1,6 +1,12 @@
 - id: sync-repos
   name: Sync repos with Poetry
   description: Automatically sync pre-commit repos with package versions in poetry.lock
-  entry: swp
+  entry: sync-repos
   language: python
-  files: poetry.lock
+  files: (poetry.lock|.pre-commit-config.ya?ml)
+- id: sync-repos
+  name: sync-hooks-additional-dependencies
+  description: Automatically sync pre-commit hook additional dependencies with poetry groups
+  entry: sync-hooks-additional-dependencies
+  language: python
+  files: (poetry.lock|pyproject.toml|.pre-commit-config.ya?ml)
