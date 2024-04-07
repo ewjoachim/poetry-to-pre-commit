@@ -43,6 +43,7 @@ pytest-mock = "*"
 [tool.poetry-dynamic-versioning]
 enable = true
 pattern = '(?P<base>\d+(\.\d+)*)([-._]?((?P<stage>[a-zA-Z]+)[-._]?(?P<revision>\d+)?))?$'
+vcs = 'git'
 
 [tool.pytest.ini_options]
 addopts = [
