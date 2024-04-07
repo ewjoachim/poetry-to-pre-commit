@@ -6,16 +6,16 @@ changelog:
       - dependabot
   categories:
     - title: "Breaking changes"
-      labels: ["PR type: breaking 💥"]
+      labels: [breaking]
     - title: "Features"
-      labels: ["PR type: feature ⭐️"]
+      labels: [feature]
     - title: "Bug Fixes"
-      labels: ["PR type: bugfix 🕵️"]
+      labels: [bugfix]
     - title: "Miscellaneous"
-      labels: ["PR type: miscellaneous 👾"]
+      labels: [miscellaneous]
     - title: "Documentation"
-      labels: ["PR type: documentation 📚"]
+      labels: [documentation]
     - title: "Dependencies"
-      labels: ["PR type: dependencies 🤖"]
+      labels: [dependencies]
     - title: "Uncategorized"
       labels: ["*"]
