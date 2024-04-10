@@ -24,7 +24,7 @@ def format_bind(value: str) -> tuple[str, set[str]]:
 
 
 def combine_bind_values(bind: list[tuple[str, set[str]]]) -> dict[str, set[str]]:
-    result = {}
+    result: dict[str, set[str]] = {}
     for key, value in bind:
         result.setdefault(key, set()).update(value)
     return result
@@ -71,7 +71,7 @@ def get_poetry_deps(*, cwd: pathlib.Path | None = None, group: str) -> Iterable[
 def sync_hook_additional_deps(
     *,
     config: dict[str, Any],
-    deps_by_group: dict[str, list[str]],
+    deps_by_group: dict[str, set[str]],
     bind: dict[str, set[str]],
 ) -> None:
     for repo in config.get("repos", []):
@@ -81,7 +81,7 @@ def sync_hook_additional_deps(
                 groups = bind[hook_id]
             except KeyError:
                 continue
-            deps = set()
+            deps: set[str] = set()
 
             for group in groups:
                 deps.update(deps_by_group.get(group, set()))
@@ -93,7 +93,7 @@ def sync_hooks_additional_dependencies(
     argv: list[str],
     pre_commit_path: pathlib.Path = PRE_COMMIT_CONFIG_FILE,
     poetry_cwd: pathlib.Path | None = None,
-):
+) -> None:
     parser = get_sync_hooks_additional_dependencies_parser()
     args = parser.parse_args(argv)
 
@@ -108,5 +108,5 @@ def sync_hooks_additional_dependencies(
         sync_hook_additional_deps(config=config, bind=bind, deps_by_group=deps_by_group)
 
 
-def sync_hooks_additional_dependencies_cli():
+def sync_hooks_additional_dependencies_cli() -> None:
     sync_hooks_additional_dependencies(argv=sys.argv[1:])

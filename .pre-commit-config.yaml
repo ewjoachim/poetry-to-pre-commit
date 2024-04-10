@@ -43,3 +43,12 @@ repos:
       - id: ruff
         args: [--fix, --unsafe-fixes]
       - id: ruff-format
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: 9db9854e3041219b1eb619872a2dfaf58adfb20b  # v1.8.0
+    hooks:
+      - id: mypy
+        args: [--install-types, --non-interactive]
+        additional_dependencies:
+          - poetry==1.8.2
+          - pytest==8.1.1
+          - ruamel-yaml==0.18.6
