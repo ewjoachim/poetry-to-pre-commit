@@ -47,7 +47,8 @@ repos:
         # "mypy" is the id of a pre-commit hook
         # "types" is the name of your poetry group containing typing dependencies
         # "main" is the automated name associated with the "default" poetry dependencies
-        args: ["--bind", "mypy=types,main"]
+        # `--do-not-add` will update or remove dependencies, but not add any new one.
+        args: ["--bind", "mypy=types,main", "--do-not-add"]
 ```
 
 ## How it works
@@ -76,6 +77,11 @@ look for the version of all the dependencies of these groups in your
 `poetry.lock`. In `.pre-commit-config.yaml`, it will identify the corresponding
 hook, and set the `additional_dependencies` key to the list sorted of all the
 dependencies.
+If you pass the option `--do-not-add`, packages that are already in your pre-commit
+config file will be updated or removed (if they are not listed in any of the considered
+poetry dependencies' groups), but no new packages will be added. You should use
+this to avoid installing unecessary dependencies in the pre-commit environment,
+e.g. if mypy does not need all of them to type check your project.
 
 ## Credit where it's due
 

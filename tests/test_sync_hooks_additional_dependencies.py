@@ -121,3 +121,90 @@ def test_sync_hooks_additional_dependencies(tmp_path, poetry_cwd):
         "psycopg[pool]==3.1.18",
         "types-requests==2.31.0.20240311",
     ]
+
+
+class TestParamDoNotAdd:
+    """Test the option `--do-not-add`."""
+
+    @pytest.mark.parametrize(
+        ("poetry_deps", "additional_deps", "expected_additional_deps"),
+        [
+            (["a==1", "b"], ["a"], ["a==1"]),
+            (["a==1", "b"], ["a[x]==2"], ["a==1"]),
+            (["a[x]==1", "b"], ["a"], ["a[x]==1"]),
+            (["a[x]==1", "b"], ["a[x]"], ["a[x]==1"]),
+            (["a==1", "b"], ["a == 2"], ["a==1"]),
+            (["a==1", "b"], ["a<=2"], ["a==1"]),
+            (["a==1", "b"], ["a>=1"], ["a==1"]),
+        ],
+    )
+    def test_sync_hook_additional_deps(
+        self, poetry_deps, additional_deps, expected_additional_deps
+    ) -> None:
+        """Check that `sync_hook_additional_deps` handles the different ways to write a package entry."""
+        config = {
+            "repos": [
+                {"hooks": [{"id": "mypy", "additional_dependencies": additional_deps}]}
+            ]
+        }
+        deps_by_group = {"main": poetry_deps}
+        bind = {"mypy": {"main"}}
+
+        sync_hooks_additional_dependencies.sync_hook_additional_deps(
+            config=config, deps_by_group=deps_by_group, bind=bind, do_not_add=True
+        )
+        assert config == {
+            "repos": [
+                {
+                    "hooks": [
+                        {
+                            "id": "mypy",
+                            "additional_dependencies": expected_additional_deps,
+                        }
+                    ]
+                }
+            ]
+        }
+
+    @pytest.mark.parametrize(
+        ("additional_deps", "expected_additional_deps"),
+        [
+            ([], []),
+            (["attrs", "psycopg"], ["attrs==23.2.0", "psycopg[pool]==3.1.18"]),
+            (["attrs", "psycopg[pool]"], ["attrs==23.2.0", "psycopg[pool]==3.1.18"]),
+            (["attrs", "psycopg[dummy]"], ["attrs==23.2.0", "psycopg[pool]==3.1.18"]),
+            (["attrs", "fastapi==1.0.0"], ["attrs==23.2.0"]),
+        ],
+    )
+    def test_sync_hooks_additional_dependencies(
+        self, tmp_path, poetry_cwd, additional_deps, expected_additional_deps
+    ) -> None:
+        pre_commit_path = tmp_path / ".pre-commit-config.yaml"
+        ruamel.yaml.YAML().dump(
+            {
+                "repos": [
+                    {
+                        "repo": "https://github.com/foo/pyright-python",
+                        "rev": "v1.1.300",
+                        "hooks": [
+                            {
+                                "id": "pyright",
+                                "additional_dependencies": additional_deps,
+                            }
+                        ],
+                    }
+                ]
+            },
+            pre_commit_path,
+        )
+
+        sync_hooks_additional_dependencies.sync_hooks_additional_dependencies(
+            argv=["foo", "--bind", "pyright=types,main", "--do-not-add"],
+            pre_commit_path=pre_commit_path,
+            poetry_cwd=poetry_cwd,
+        )
+        result = ruamel.yaml.YAML().load(pre_commit_path.read_text())
+        assert (
+            result["repos"][0]["hooks"][0]["additional_dependencies"]
+            == expected_additional_deps
+        )
