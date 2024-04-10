@@ -25,7 +25,7 @@ def format_bind(value: str) -> tuple[str, set[str]]:
 
 
 def combine_bind_values(bind: list[tuple[str, set[str]]]) -> dict[str, set[str]]:
-    result = {}
+    result: dict[str, set[str]] = {}
     for key, value in bind:
         result.setdefault(key, set()).update(value)
     return result
@@ -92,7 +92,7 @@ def update_or_remove_additional_deps(
 def _sync_hooks_additional_dependencies(
     *,
     config: dict[str, Any],
-    deps_by_group: dict[str, list[str]],
+    deps_by_group: dict[str, set[str]],
     bind: dict[str, set[str]],
     no_new_deps: bool = False,
 ) -> None:
@@ -112,7 +112,7 @@ def _sync_hooks_additional_dependencies(
                 groups = bind[hook_id]
             except KeyError:
                 continue
-            deps = set()
+            deps: set[str] = set()
 
             for group in groups:
                 deps.update(deps_by_group.get(group, set()))

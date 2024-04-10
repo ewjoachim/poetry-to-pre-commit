@@ -126,5 +126,5 @@ def sync_repos(
         )
 
 
-def sync_repos_cli():
+def sync_repos_cli() -> None:
     sync_repos(argv=sys.argv[1:])

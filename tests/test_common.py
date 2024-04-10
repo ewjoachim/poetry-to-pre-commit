@@ -1,9 +1,11 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 from poetry_to_pre_commit import common
 
 
-def test_get_poetry_packages(poetry_cwd):
+def test_get_poetry_packages(poetry_cwd: Path) -> None:
     result = list(
         common.get_poetry_packages(
             cwd=poetry_cwd,
@@ -13,7 +15,7 @@ def test_get_poetry_packages(poetry_cwd):
     assert common.PoetryPackage(name="attrs", version="23.2.0") in result
 
 
-def test_pre_commit_config_roundtrip__no_change(tmp_path):
+def test_pre_commit_config_roundtrip__no_change(tmp_path: Path) -> None:
     file = tmp_path / "file.yaml"
     yaml = "a: 1\nb: 2\n"
     file.write_text(yaml)
@@ -22,7 +24,7 @@ def test_pre_commit_config_roundtrip__no_change(tmp_path):
     assert file.read_text() == yaml
 
 
-def test_pre_commit_config_roundtrip__write_back(tmp_path):
+def test_pre_commit_config_roundtrip__write_back(tmp_path: Path) -> None:
     file = tmp_path / "file.yaml"
     yaml = "a: 1\nb: 2\n"
     file.write_text(yaml)

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 import pytest
 import ruamel.yaml
 
@@ -14,7 +16,7 @@ from poetry_to_pre_commit import common, sync_repos
         ("https://github.com/foo/mirrors-bar", "bar"),
     ],
 )
-def test_repo_url_to_pypi_name(input, expected):
+def test_repo_url_to_pypi_name(input: str, expected: str) -> None:
     assert sync_repos.repo_url_to_pypi_name(input) == expected
 
 
@@ -37,13 +39,13 @@ def test_repo_url_to_pypi_name(input, expected):
         ),
     ],
 )
-def test_get_parser(input, expected):
+def test_get_parser(input: list[str], expected: dict[str, list[str]]) -> None:
     parser = sync_repos.get_sync_repos_parser()
     args = parser.parse_args(input)
     assert vars(args) == expected
 
 
-def test_get_pre_commit_repos():
+def test_get_pre_commit_repos() -> None:
     result = sync_repos.get_pre_commit_repos(
         config={
             "repos": [
@@ -75,12 +77,17 @@ bar = sync_repos.PreCommitRepo(
         ([bar], ["baz"], {"bar": "baz"}, []),
     ],
 )
-def test_extract_pypi_names(repos, skip, map, expected):
+def test_extract_pypi_names(
+    repos: list[sync_repos.PreCommitRepo],
+    skip: list[str],
+    map: dict[str, str],
+    expected: list[tuple[str, sync_repos.PreCommitRepo]],
+) -> None:
     result = sync_repos.extract_pypi_names(repos=repos, skip=skip, map=map)
     assert list(result) == expected
 
 
-def test_write_precommit_config():
+def test_write_precommit_config() -> None:
     projects = [
         (
             sync_repos.PreCommitRepo(
@@ -115,7 +122,7 @@ def test_write_precommit_config():
     }
 
 
-def test_sync_repos(tmp_path, poetry_cwd):
+def test_sync_repos(tmp_path: Path, poetry_cwd: Path) -> None:
     pre_commit_path = tmp_path / ".pre-commit-config.yaml"
     ruamel.yaml.YAML().dump(
         {
