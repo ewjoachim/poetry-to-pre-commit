@@ -137,7 +137,7 @@ def sync_hooks_additional_dependencies(
     args = parser.parse_args(argv)
 
     bind = combine_bind_values(args.bind)
-    deps_by_group = {}
+    deps_by_group: dict[str, set[str]] = {}
 
     for groups in bind.values():
         for group in groups:
