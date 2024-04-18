@@ -2,10 +2,10 @@ from __future__ import annotations
 
 import argparse
 import pathlib
-import re
 import sys
 from typing import Any, Iterable
 
+from packaging.requirements import Requirement
 from poetry import factory
 from poetry.core.packages.dependency_group import MAIN_GROUP
 
@@ -78,10 +78,8 @@ def update_or_remove_additional_deps(
     poetry_deps: set[str], hook_additional_deps: list[str]
 ) -> set[str]:
     # Additional packages that are already in pre-commit configuration could be listed with
-    # any format that is accepted by pip. The following regex might not cover all the cases.
-    current_deps = re.findall(
-        r"^\s*([^=><\[\s]+)", "\n".join(hook_additional_deps), re.MULTILINE
-    )
+    # any format that is accepted by pip - use `Requirement` to parse them properly.
+    current_deps = [Requirement(dep).name for dep in hook_additional_deps]
 
     return {
         package

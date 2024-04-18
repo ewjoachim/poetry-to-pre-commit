@@ -79,7 +79,7 @@ hook, and set the `additional_dependencies` key to the list sorted of all the
 dependencies.
 If you pass the option `--no-new-deps`, packages that are already in your pre-commit
 config file will be updated or removed (if they are not listed in any of the considered
-poetry dependencies' groups), but no new packages will be added. You should use
+poetry dependencies' groups), but no new packages will be added. You can use
 this to avoid installing unecessary dependencies in the pre-commit environment,
 e.g. if mypy does not need all of them to type check your project.
 

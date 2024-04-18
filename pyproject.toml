@@ -25,6 +25,7 @@ sync-hooks-additional-dependencies = 'poetry_to_pre_commit.__init__:sync_hooks_a
 python = "^3.8"
 poetry = "*"
 "ruamel.yaml" = "*"
+packaging = "^24.0"
 
 [tool.poetry.group.types]
 optional = true
