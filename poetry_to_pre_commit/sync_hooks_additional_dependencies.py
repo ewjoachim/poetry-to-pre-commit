@@ -48,7 +48,7 @@ def get_sync_hooks_additional_dependencies_parser() -> argparse.ArgumentParser:
         f"`--bind mypy={MAIN_GROUP},types`).",
     )
     parser.add_argument(
-        "--do-not-add",
+        "--no-new-deps",
         action="store_true",
         help="Update or remove dependencies, but don't add any new one.",
     )
@@ -96,7 +96,7 @@ def sync_hook_additional_deps(
     config: dict[str, Any],
     deps_by_group: dict[str, list[str]],
     bind: dict[str, set[str]],
-    do_not_add: bool = False,
+    no_new_deps: bool = False,
 ) -> None:
     """Sync additional dependencies from `deps_by_group` to `config`.
 
@@ -104,7 +104,7 @@ def sync_hook_additional_deps(
         config: pre-commit config
         deps_by_group: packages from poetry.lock, by poetry dependency group
         bind: poetry dependency groups to consider for each pre-commit hook
-        do_not_add: Update or remove existing dependencies from the "additional_dependencies"
+        no_new_deps: Update or remove existing dependencies from the "additional_dependencies"
             section of pre-commit config, but do not add new dependencies from poetry.
     """
     for repo in config.get("repos", []):
@@ -121,7 +121,7 @@ def sync_hook_additional_deps(
 
             hook["additional_dependencies"] = sorted(
                 update_or_remove_additional_deps(deps, hook["additional_dependencies"])
-                if do_not_add
+                if no_new_deps
                 else deps
             )
 
@@ -147,7 +147,7 @@ def sync_hooks_additional_dependencies(
             config=config,
             bind=bind,
             deps_by_group=deps_by_group,
-            do_not_add=args.do_not_add,
+            no_new_deps=args.no_new_deps,
         )
 
 
