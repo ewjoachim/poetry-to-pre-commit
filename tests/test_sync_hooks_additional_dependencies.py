@@ -63,14 +63,14 @@ def test_get_poetry_deps__error(poetry_cwd):
         )
 
 
-def test_sync_hook_additional_deps():
+def test__sync_hooks_additional_dependencies():
     config = {"repos": [{"hooks": [{"id": "mypy"}, {"id": "foo"}]}]}
     deps_by_group = {
         "types": ["bar==1", "baz[e]==2"],
         "main": ["qux==3"],
     }
     bind = {"mypy": {"types", "main", "unknown"}, "other_unknown": {"abc"}}
-    sync_hooks_additional_dependencies.sync_hook_additional_deps(
+    sync_hooks_additional_dependencies._sync_hooks_additional_dependencies(
         config=config,
         deps_by_group=deps_by_group,
         bind=bind,
@@ -135,10 +135,10 @@ def test_sync_hooks_additional_dependencies(tmp_path, poetry_cwd):
         (["a==1", "b"], ["a>=1"], ["a==1"]),
     ],
 )
-def test_sync_hook_additional_deps_with_no_new_deps(
+def test__sync_hooks_additional_deps__no_new_deps(
     poetry_deps, additional_deps, expected_additional_deps
 ) -> None:
-    """Check that `sync_hook_additional_deps` handles the different ways to write a package entry."""
+    """Check that `_sync_hooks_additional_dependencies` handles the different ways to write a package entry."""
     config = {
         "repos": [
             {"hooks": [{"id": "mypy", "additional_dependencies": additional_deps}]}
@@ -147,7 +147,7 @@ def test_sync_hook_additional_deps_with_no_new_deps(
     deps_by_group = {"main": poetry_deps}
     bind = {"mypy": {"main"}}
 
-    sync_hooks_additional_dependencies.sync_hook_additional_deps(
+    sync_hooks_additional_dependencies._sync_hooks_additional_dependencies(
         config=config, deps_by_group=deps_by_group, bind=bind, no_new_deps=True
     )
     assert config == {
@@ -174,7 +174,7 @@ def test_sync_hook_additional_deps_with_no_new_deps(
         (["attrs", "fastapi==1.0.0"], ["attrs==23.2.0"]),
     ],
 )
-def test_sync_hooks_additional_dependencies_with_no_new_deps(
+def test_sync_hooks_additional_dependencies__no_new_deps(
     tmp_path, poetry_cwd, additional_deps, expected_additional_deps
 ) -> None:
     pre_commit_path = tmp_path / ".pre-commit-config.yaml"

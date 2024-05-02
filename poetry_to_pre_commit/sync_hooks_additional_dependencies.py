@@ -89,7 +89,7 @@ def update_or_remove_additional_deps(
     }
 
 
-def sync_hook_additional_deps(
+def _sync_hooks_additional_dependencies(
     *,
     config: dict[str, Any],
     deps_by_group: dict[str, list[str]],
@@ -118,7 +118,10 @@ def sync_hook_additional_deps(
                 deps.update(deps_by_group.get(group, set()))
 
             hook["additional_dependencies"] = sorted(
-                update_or_remove_additional_deps(deps, hook["additional_dependencies"])
+                update_or_remove_additional_deps(
+                    poetry_deps=deps,
+                    hook_additional_deps=hook["additional_dependencies"],
+                )
                 if no_new_deps
                 else deps
             )
@@ -141,7 +144,7 @@ def sync_hooks_additional_dependencies(
             deps_by_group[group] = set(get_poetry_deps(cwd=poetry_cwd, group=group))
 
     with common.pre_commit_config_roundtrip(pre_commit_path) as config:
-        sync_hook_additional_deps(
+        _sync_hooks_additional_dependencies(
             config=config,
             bind=bind,
             deps_by_group=deps_by_group,
