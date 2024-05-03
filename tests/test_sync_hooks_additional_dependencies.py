@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 import pytest
 import ruamel.yaml
 
@@ -13,16 +15,16 @@ from poetry_to_pre_commit import sync_hooks_additional_dependencies
         ("foo=bar,baz", ("foo", {"bar", "baz"})),
     ],
 )
-def test_format_bind(value, expected):
+def test_format_bind(value: str, expected: tuple[str, set[str]]) -> None:
     assert sync_hooks_additional_dependencies.format_bind(value=value) == expected
 
 
-def test_format_bind__error():
+def test_format_bind__error() -> None:
     with pytest.raises(ValueError):
         sync_hooks_additional_dependencies.format_bind(value="foo")
 
 
-def test_combine_bind_values():
+def test_combine_bind_values() -> None:
     bind = [("foo", {"bar"}), ("foo", {"baz"}), ("qux", {"quux"})]
     assert sync_hooks_additional_dependencies.combine_bind_values(bind=bind) == {
         "foo": {"bar", "baz"},
@@ -30,15 +32,17 @@ def test_combine_bind_values():
     }
 
 
-def test_get_sync_hooks_additional_dependencies_parser():
-    parser = sync_hooks_additional_dependencies.get_sync_hooks_additional_dependencies_parser()
+def test_get_sync_hooks_additional_dependencies_parser() -> None:
+    parser = (
+        sync_hooks_additional_dependencies.get_sync_hooks_additional_dependencies_parser()
+    )
     assert parser.parse_args(["--bind", "foo=bar,baz", "--bind", "foo=qux"]).bind == [
         ("foo", {"bar", "baz"}),
         ("foo", {"qux"}),
     ]
 
 
-def test_get_poetry_deps(poetry_cwd):
+def test_get_poetry_deps(poetry_cwd: Path) -> None:
     results = list(
         sync_hooks_additional_dependencies.get_poetry_deps(
             cwd=poetry_cwd,
@@ -53,7 +57,7 @@ def test_get_poetry_deps(poetry_cwd):
     ]
 
 
-def test_get_poetry_deps__error(poetry_cwd):
+def test_get_poetry_deps__error(poetry_cwd: Path) -> None:
     with pytest.raises(SystemError):
         list(
             sync_hooks_additional_dependencies.get_poetry_deps(
@@ -63,11 +67,11 @@ def test_get_poetry_deps__error(poetry_cwd):
         )
 
 
-def test__sync_hooks_additional_dependencies():
+def test__sync_hooks_additional_dependencies() -> None:
     config = {"repos": [{"hooks": [{"id": "mypy"}, {"id": "foo"}]}]}
     deps_by_group = {
-        "types": ["bar==1", "baz[e]==2"],
-        "main": ["qux==3"],
+        "types": {"bar==1", "baz[e]==2"},
+        "main": {"qux==3"},
     }
     bind = {"mypy": {"types", "main", "unknown"}, "other_unknown": {"abc"}}
     sync_hooks_additional_dependencies._sync_hooks_additional_dependencies(
@@ -94,7 +98,7 @@ def test__sync_hooks_additional_dependencies():
     }
 
 
-def test_sync_hooks_additional_dependencies(tmp_path, poetry_cwd):
+def test_sync_hooks_additional_dependencies(tmp_path: Path, poetry_cwd: Path) -> None:
     pre_commit_path = tmp_path / ".pre-commit-config.yaml"
     ruamel.yaml.YAML().dump(
         {

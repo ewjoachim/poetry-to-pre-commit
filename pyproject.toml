@@ -66,6 +66,9 @@ relative_files = true
 
 [tool.pyright]
 exclude = ["tests"]
+typeCheckingMode = "strict"
+reportUnknownMemberType = false
+
 
 [tool.ruff.lint]
 extend-select = [
