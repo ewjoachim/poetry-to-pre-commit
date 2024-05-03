@@ -5,6 +5,7 @@ import pathlib
 import sys
 from typing import Any, Iterable
 
+from packaging.requirements import Requirement
 from poetry import factory
 from poetry.core.packages.dependency_group import MAIN_GROUP
 
@@ -46,6 +47,11 @@ def get_sync_hooks_additional_dependencies_parser() -> argparse.ArgumentParser:
         f"`--bind mypy={MAIN_GROUP} --bind mypy:types` or "
         f"`--bind mypy={MAIN_GROUP},types`).",
     )
+    parser.add_argument(
+        "--no-new-deps",
+        action="store_true",
+        help="Update or remove dependencies, but don't add any new one.",
+    )
     return parser
 
 
@@ -68,12 +74,37 @@ def get_poetry_deps(*, cwd: pathlib.Path | None = None, group: str) -> Iterable[
         yield f"{dep.complete_name}=={package.version}"
 
 
-def sync_hook_additional_deps(
+def update_or_remove_additional_deps(
+    poetry_deps: set[str], hook_additional_deps: list[str]
+) -> set[str]:
+    # Additional packages that are already in pre-commit configuration could be listed with
+    # any format that is accepted by pip - use `Requirement` to parse them properly.
+    current_deps = [Requirement(dep).name for dep in hook_additional_deps]
+
+    return {
+        package
+        for package in poetry_deps
+        # package is yielded by `get_poetry_deps` above, and we are pretty sure that this won't raise `IndexError`
+        if package.split("==")[0].split("[")[0] in current_deps
+    }
+
+
+def _sync_hooks_additional_dependencies(
     *,
     config: dict[str, Any],
     deps_by_group: dict[str, list[str]],
     bind: dict[str, set[str]],
+    no_new_deps: bool = False,
 ) -> None:
+    """Sync additional dependencies from `deps_by_group` to `config`.
+
+    Args:
+        config: pre-commit config
+        deps_by_group: packages from poetry.lock, by poetry dependency group
+        bind: poetry dependency groups to consider for each pre-commit hook
+        no_new_deps: Update or remove existing dependencies from the "additional_dependencies"
+            section of pre-commit config, but do not add new dependencies from poetry.
+    """
     for repo in config.get("repos", []):
         for hook in repo.get("hooks", []):
             hook_id = hook["id"]
@@ -86,14 +117,22 @@ def sync_hook_additional_deps(
             for group in groups:
                 deps.update(deps_by_group.get(group, set()))
 
-            hook["additional_dependencies"] = sorted(deps)
+            hook["additional_dependencies"] = sorted(
+                update_or_remove_additional_deps(
+                    poetry_deps=deps,
+                    hook_additional_deps=hook["additional_dependencies"],
+                )
+                if no_new_deps
+                else deps
+            )
 
 
 def sync_hooks_additional_dependencies(
     argv: list[str],
     pre_commit_path: pathlib.Path = PRE_COMMIT_CONFIG_FILE,
     poetry_cwd: pathlib.Path | None = None,
-):
+) -> None:
+    """Sync additional dependencies with the packages versions from poetry lock file."""
     parser = get_sync_hooks_additional_dependencies_parser()
     args = parser.parse_args(argv)
 
@@ -105,8 +144,14 @@ def sync_hooks_additional_dependencies(
             deps_by_group[group] = set(get_poetry_deps(cwd=poetry_cwd, group=group))
 
     with common.pre_commit_config_roundtrip(pre_commit_path) as config:
-        sync_hook_additional_deps(config=config, bind=bind, deps_by_group=deps_by_group)
+        _sync_hooks_additional_dependencies(
+            config=config,
+            bind=bind,
+            deps_by_group=deps_by_group,
+            no_new_deps=args.no_new_deps,
+        )
 
 
-def sync_hooks_additional_dependencies_cli():
+def sync_hooks_additional_dependencies_cli() -> None:
+    """Entrypoint when running from the shell."""
     sync_hooks_additional_dependencies(argv=sys.argv[1:])
