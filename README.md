@@ -6,9 +6,9 @@
 |----------------------------------------------------------------- | -------: | -------: | -------: | -------: | ------: | --------: |
 | poetry\_to\_pre\_commit/\_\_init\_\_.py                          |        4 |        0 |        0 |        0 |    100% |           |
 | poetry\_to\_pre\_commit/common.py                                |       26 |        0 |        8 |        0 |    100% |           |
-| poetry\_to\_pre\_commit/sync\_hooks\_additional\_dependencies.py |       62 |        3 |       16 |        0 |     96% |63-64, 112 |
+| poetry\_to\_pre\_commit/sync\_hooks\_additional\_dependencies.py |       67 |        3 |       16 |        0 |     96% |69-70, 157 |
 | poetry\_to\_pre\_commit/sync\_repos.py                           |       61 |        1 |       20 |        0 |     99% |       130 |
-|                                                        **TOTAL** |  **153** |    **4** |   **44** |    **0** | **98%** |           |
+|                                                        **TOTAL** |  **158** |    **4** |   **44** |    **0** | **98%** |           |
 
 
 ## Setup coverage badge
