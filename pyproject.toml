@@ -66,6 +66,8 @@ relative_files = true
 [tool.pyright]
 exclude = ["tests"]
 typeCheckingMode = "strict"
+reportUnknownMemberType = false
+
 
 [tool.ruff.lint]
 extend-select = [
@@ -82,11 +84,3 @@ extend-ignore = [
 
 [tool.ruff.lint.isort]
 required-imports = ["from __future__ import annotations"]
-
-[tool.mypy]
-strict = true
-pretty = true
-show_column_numbers = true
-show_error_codes = true
-show_error_context = true
-warn_unreachable = true
