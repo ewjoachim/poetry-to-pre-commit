@@ -15,7 +15,7 @@ def pre_commit_config_roundtrip(
     path: pathlib.Path,
 ) -> Generator[dict[str, Any], None, None]:
     yaml = ruamel.yaml.YAML()
-    config = cast(dict[str, Any], yaml.load(path.read_text()))
+    config = cast("dict[str, Any]", yaml.load(path.read_text()))
     old_config = copy.deepcopy(config)
     yield config
     if config != old_config:
