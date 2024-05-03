@@ -4,7 +4,7 @@ import contextlib
 import copy
 import dataclasses
 import pathlib
-from typing import Any, Generator, Iterable
+from typing import Any, Generator, Iterable, cast
 
 import ruamel.yaml
 from poetry import factory
@@ -15,7 +15,7 @@ def pre_commit_config_roundtrip(
     path: pathlib.Path,
 ) -> Generator[dict[str, Any], None, None]:
     yaml = ruamel.yaml.YAML()
-    config = yaml.load(path.read_text())
+    config = cast(dict[str, Any], yaml.load(path.read_text()))
     old_config = copy.deepcopy(config)
     yield config
     if config != old_config:
