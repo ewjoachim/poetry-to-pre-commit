@@ -6,6 +6,7 @@ import pytest
 import ruamel.yaml
 
 from poetry_to_pre_commit import sync_hooks_additional_dependencies
+from poetry_to_pre_commit.common import PoetryPackage
 
 
 @pytest.mark.parametrize(
@@ -33,9 +34,7 @@ def test_combine_bind_values() -> None:
 
 
 def test_get_sync_hooks_additional_dependencies_parser() -> None:
-    parser = (
-        sync_hooks_additional_dependencies.get_sync_hooks_additional_dependencies_parser()
-    )
+    parser = sync_hooks_additional_dependencies.get_sync_hooks_additional_dependencies_parser()
     assert parser.parse_args(["--bind", "foo=bar,baz", "--bind", "foo=qux"]).bind == [
         ("foo", {"bar", "baz"}),
         ("foo", {"qux"}),
@@ -51,9 +50,9 @@ def test_get_poetry_deps(poetry_cwd: Path) -> None:
     )
 
     assert sorted(results) == [
-        "flake8==7.0.0",
-        "pylint==3.1.0",
-        "pyright==1.1.355",
+        PoetryPackage("flake8", "7.0.0"),
+        PoetryPackage("pylint", "3.1.0"),
+        PoetryPackage("pyright", "1.1.355"),
     ]
 
 
@@ -130,16 +129,29 @@ def test_sync_hooks_additional_dependencies(tmp_path: Path, poetry_cwd: Path) ->
 @pytest.mark.parametrize(
     ("poetry_deps", "additional_deps", "expected_additional_deps"),
     [
-        (["a==1", "b"], ["a"], ["a==1"]),
-        (["a==1", "b"], ["a[x]==2"], ["a==1"]),
-        (["a[x]==1", "b"], ["a"], ["a[x]==1"]),
-        (["a[x]==1", "b"], ["a[x]"], ["a[x]==1"]),
-        (["a==1", "b"], ["a == 2"], ["a==1"]),
-        (["a==1", "b"], ["a<=2"], ["a==1"]),
-        (["a==1", "b"], ["a>=1"], ["a==1"]),
+        ({PoetryPackage("a", "1"), PoetryPackage("b")}, ["a"], ["a==1"]),
+        ({PoetryPackage("a", "1"), PoetryPackage("b")}, ["a[x]==2"], ["a==1"]),
+        (
+            {PoetryPackage("a", "1", frozenset({"x"})), PoetryPackage("b")},
+            ["a"],
+            ["a[x]==1"],
+        ),
+        (
+            {PoetryPackage("a", "1", frozenset({"x"})), PoetryPackage("b")},
+            ["a[x]"],
+            ["a[x]==1"],
+        ),
+        (
+            {PoetryPackage("a", "1", frozenset({"x", "y"})), PoetryPackage("b")},
+            ["a[x]"],
+            ["a[x,y]==1"],
+        ),
+        ({PoetryPackage("a", "1"), PoetryPackage("b")}, ["a == 2"], ["a==1"]),
+        ({PoetryPackage("a", "1"), PoetryPackage("b")}, ["a<=2"], ["a==1"]),
+        ({PoetryPackage("a", "1"), PoetryPackage("b")}, ["a>=1"], ["a==1"]),
     ],
 )
-def test__sync_hooks_additional_deps__no_new_deps(
+def test__sync_hooks_additional_dependencies__no_new_deps(
     poetry_deps, additional_deps, expected_additional_deps
 ) -> None:
     """Check that `_sync_hooks_additional_dependencies` handles the different ways to write a package entry."""
