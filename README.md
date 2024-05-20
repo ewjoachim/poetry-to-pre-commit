@@ -5,10 +5,10 @@
 | Name                                                             |    Stmts |     Miss |   Branch |   BrPart |   Cover |   Missing |
 |----------------------------------------------------------------- | -------: | -------: | -------: | -------: | ------: | --------: |
 | poetry\_to\_pre\_commit/\_\_init\_\_.py                          |        4 |        0 |        0 |        0 |    100% |           |
-| poetry\_to\_pre\_commit/common.py                                |       26 |        0 |        8 |        0 |    100% |           |
-| poetry\_to\_pre\_commit/sync\_hooks\_additional\_dependencies.py |       67 |        3 |       16 |        0 |     96% |69-70, 157 |
+| poetry\_to\_pre\_commit/common.py                                |       32 |        0 |       10 |        0 |    100% |           |
+| poetry\_to\_pre\_commit/sync\_hooks\_additional\_dependencies.py |       68 |        3 |       18 |        0 |     97% |71-72, 159 |
 | poetry\_to\_pre\_commit/sync\_repos.py                           |       61 |        1 |       20 |        0 |     99% |       130 |
-|                                                        **TOTAL** |  **158** |    **4** |   **44** |    **0** | **98%** |           |
+|                                                        **TOTAL** |  **165** |    **4** |   **48** |    **0** | **98%** |           |
 
 
 ## Setup coverage badge
