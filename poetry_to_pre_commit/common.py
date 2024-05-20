@@ -23,10 +23,18 @@ def pre_commit_config_roundtrip(
         yaml.dump(config, path)
 
 
-@dataclasses.dataclass
+@dataclasses.dataclass(frozen=True, order=True)
 class PoetryPackage:
     name: str
-    version: str
+    version: str = "*"
+    extras: frozenset[str] = dataclasses.field(default_factory=frozenset)
+
+    def __str__(self) -> str:
+        if self.extras:
+            extras = ",".join(sorted(self.extras))
+            return f"{self.name}[{extras}]=={self.version}"
+        else:
+            return f"{self.name}=={self.version}"
 
 
 def get_poetry_packages(cwd: pathlib.Path | None = None) -> Iterable[PoetryPackage]:
@@ -35,6 +43,5 @@ def get_poetry_packages(cwd: pathlib.Path | None = None) -> Iterable[PoetryPacka
 
     for package in repository.packages:
         yield PoetryPackage(
-            name=package.name,
-            version=package.version.text,
+            name=package.name, version=package.version.text, extras=package.features
         )

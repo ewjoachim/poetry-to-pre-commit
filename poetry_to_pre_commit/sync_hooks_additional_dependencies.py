@@ -55,7 +55,9 @@ def get_sync_hooks_additional_dependencies_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def get_poetry_deps(*, cwd: pathlib.Path | None = None, group: str) -> Iterable[str]:
+def get_poetry_deps(
+    *, cwd: pathlib.Path | None = None, group: str
+) -> Iterable[common.PoetryPackage]:
     package_by_name = {p.name: p for p in common.get_poetry_packages(cwd=cwd)}
     main_package = factory.Factory().create_poetry(cwd=cwd).package
     try:
@@ -71,28 +73,25 @@ def get_poetry_deps(*, cwd: pathlib.Path | None = None, group: str) -> Iterable[
                 f"Package not found in poetry.lock: {dep.name}. "
                 "Is your poetry.lock up-to-date?"
             ) from e
-        yield f"{dep.complete_name}=={package.version}"
+        yield common.PoetryPackage(
+            name=dep.name, version=package.version, extras=dep.extras
+        )
 
 
 def update_or_remove_additional_deps(
-    poetry_deps: set[str], hook_additional_deps: list[str]
-) -> set[str]:
+    poetry_deps: set[common.PoetryPackage], hook_additional_deps: list[str]
+) -> set[common.PoetryPackage]:
     # Additional packages that are already in pre-commit configuration could be listed with
     # any format that is accepted by pip - use `Requirement` to parse them properly.
     current_deps = [Requirement(dep).name for dep in hook_additional_deps]
 
-    return {
-        package
-        for package in poetry_deps
-        # package is yielded by `get_poetry_deps` above, and we are pretty sure that this won't raise `IndexError`
-        if package.split("==")[0].split("[")[0] in current_deps
-    }
+    return {package for package in poetry_deps if package.name in current_deps}
 
 
 def _sync_hooks_additional_dependencies(
     *,
     config: dict[str, Any],
-    deps_by_group: dict[str, set[str]],
+    deps_by_group: dict[str, set[common.PoetryPackage]],
     bind: dict[str, set[str]],
     no_new_deps: bool = False,
 ) -> None:
@@ -112,18 +111,21 @@ def _sync_hooks_additional_dependencies(
                 groups = bind[hook_id]
             except KeyError:
                 continue
-            deps: set[str] = set()
+            deps: set[common.PoetryPackage] = set()
 
             for group in groups:
                 deps.update(deps_by_group.get(group, set()))
 
-            hook["additional_dependencies"] = sorted(
+            packages = (
                 update_or_remove_additional_deps(
                     poetry_deps=deps,
                     hook_additional_deps=hook["additional_dependencies"],
                 )
                 if no_new_deps
                 else deps
+            )
+            hook["additional_dependencies"] = sorted(
+                str(package) for package in packages
             )
 
 
@@ -137,7 +139,7 @@ def sync_hooks_additional_dependencies(
     args = parser.parse_args(argv)
 
     bind = combine_bind_values(args.bind)
-    deps_by_group: dict[str, set[str]] = {}
+    deps_by_group: dict[str, set[common.PoetryPackage]] = {}
 
     for groups in bind.values():
         for group in groups:
