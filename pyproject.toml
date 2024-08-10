@@ -1,10 +1,10 @@
 [build-system]
-requires = ["poetry-core", "poetry-dynamic-versioning"]
-build-backend = "poetry_dynamic_versioning.backend"
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "poetry_to_pre_commit"
-version = "0.0.0"
+version = "2.1.0"
 description = "Sync versions in .pre-commit-config.yaml from poetry.lock"
 authors = ["Joachim Jablon"]
 license = "MIT License"
@@ -40,11 +40,6 @@ ruff = "*"
 pytest = "*"
 pytest-cov = "*"
 pytest-mock = "*"
-
-[tool.poetry-dynamic-versioning]
-enable = true
-pattern = '(?P<base>\d+(\.\d+)*)([-._]?((?P<stage>[a-zA-Z]+)[-._]?(?P<revision>\d+)?))?$'
-vcs = 'git'
 
 [tool.pytest.ini_options]
 addopts = [
