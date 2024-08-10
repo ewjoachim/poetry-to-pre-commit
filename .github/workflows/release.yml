@@ -22,8 +22,6 @@ jobs:
         with:
           cache: "poetry"
 
-      - run: poetry install
-
       - run: poetry version "${{ github.event.inputs.tag }}"
 
       - run: git commit -am "Release ${{ github.event.inputs.tag }}"
