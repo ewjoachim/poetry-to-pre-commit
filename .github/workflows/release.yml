@@ -1,0 +1,43 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag to release"
+        required: true
+        type: string
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install poetry
+        run: pipx install poetry
+
+      - uses: actions/setup-python@v5
+        with:
+          cache: "poetry"
+
+      - run: poetry install
+
+      - run: poetry version "${{ github.event.inputs.tag }}"
+
+      - run: git commit -am "Release ${{ github.event.inputs.tag }}"
+        env:
+          GIT_AUTHOR_NAME: "GitHub Actions"
+          GIT_AUTHOR_EMAIL: "41898282+github-actions[bot]@users.noreply.github.com"
+          GIT_COMMITTER_NAME: "GitHub Actions"
+          GIT_COMMITTER_EMAIL: "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - run: git push origin
+
+      - run: >
+          gh release create "${{ github.event.inputs.tag }}"
+          --title "${{ github.event.inputs.tag }}"
+          --generate-notes
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
