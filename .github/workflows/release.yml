@@ -24,8 +24,6 @@ jobs:
         with:
           cache: "poetry"
 
-      - run: poetry install
-
       - run: poetry version "${{ github.event.inputs.tag }}"
 
       - run: git commit -am "Release ${{ github.event.inputs.tag }}"
@@ -36,6 +34,8 @@ jobs:
           GIT_COMMITTER_EMAIL: "41898282+github-actions[bot]@users.noreply.github.com"
 
       - run: git push origin
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - run: >
           gh release create "${{ github.event.inputs.tag }}"
