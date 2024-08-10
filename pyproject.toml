@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "poetry_to_pre_commit"
-version = "2.1.0"
+version = "2.2.0"
 description = "Sync versions in .pre-commit-config.yaml from poetry.lock"
 authors = ["Joachim Jablon"]
 license = "MIT License"
