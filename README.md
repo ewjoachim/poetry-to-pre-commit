@@ -1,3 +1,7 @@
+> [!WARNING]
+> I don't indend to maintain this repo, as my own repos now use `uv` and I've made [sync-pre-commit-with-uv](https://github.com/ewjoachim/sync-pre-commit-with-uv).
+> You can fork freely. Given this repo has 0 stars, I don't plan to transfer it to someone else.
+
 # Poetry to Pre-Commit: a pre-commit hook to sync .pre-commit-config.yaml versions from Poetry
 
 [![GitHub Repository](https://img.shields.io/github/stars/ewjoachim/poetry_to_pre_commit?style=flat&logo=github&color=brightgreen)](https://github.com/ewjoachim/poetry_to_pre_commit/)
